@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SALTPORT</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0b1016;
+    font-family:Verdana,Arial,sans-serif;color:#e8e4d8}
+  #scene{position:fixed;inset:0;width:100%;height:100%;display:block}
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:5}
+  .panel{background:rgba(10,16,22,.78);border:1px solid #3a4a58;border-radius:6px;
+    padding:8px 10px}
+  #hud-topleft{position:absolute;top:12px;left:12px}
+  #hud-money{font-size:22px;font-weight:bold;color:#ffb347}
+  #hud-clock{font-size:14px;color:#9fd8e8}
+  #hud-wanted{margin-top:6px;font-size:18px;letter-spacing:2px;color:#ffd24a}
+  #hud-wanted .off{color:#3a4a58}
+  #hud-district{position:absolute;top:12px;left:50%;transform:translateX(-50%);
+    text-align:center;min-width:220px}
+  #hud-district-name{font-size:16px;font-weight:bold;letter-spacing:2px}
+  #hud-standing-wrap{height:8px;background:#22303c;border-radius:4px;margin-top:5px;overflow:hidden}
+  #hud-standing{height:100%;width:50%;background:#7fc96f}
+  #hud-standing-label{font-size:11px;color:#b9c4cc;margin-top:3px}
+  #hud-right{position:absolute;top:12px;right:12px;text-align:right}
+  #hud-health-wrap,#hud-armour-wrap{width:170px;height:10px;background:#22303c;
+    border-radius:5px;overflow:hidden;margin-top:4px}
+  #hud-health{height:100%;width:100%;background:#e05252}
+  #hud-armour{height:100%;width:0%;background:#5aa9e0}
+  #hud-health-label,#hud-armour-label{font-size:11px;color:#b9c4cc}
+  #hud-weapons{margin-top:8px;font-size:13px}
+  #hud-weapons .slot{display:inline-block;border:1px solid #3a4a58;border-radius:4px;
+    padding:3px 7px;margin-left:5px;color:#b9c4cc}
+  #hud-weapons .slot.on{color:#ffb347;border-color:#ffb347}
+  #mission{position:absolute;left:12px;bottom:12px;max-width:340px}
+  #mission-stage{font-size:12px;color:#9fd8e8;letter-spacing:1px}
+  #mission-name{font-size:17px;font-weight:bold;margin:2px 0}
+  #mission-objective{font-size:13px;color:#d8d2c2}
+  #mission-timer{font-size:13px;color:#ffb347;margin-top:4px}
+  #mission-next{font-size:12px;color:#7fc96f;margin-top:4px}
+  #dispatch-log{position:absolute;right:12px;bottom:12px;width:300px;max-height:150px;
+    overflow:hidden;font-size:12px;color:#c9d4dc}
+  #dispatch-log div{margin-top:3px}
+  #minimap{position:absolute;right:12px;top:150px;border:1px solid #3a4a58;border-radius:6px}
+  #phone{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(5,8,12,.72);z-index:10;pointer-events:auto}
+  #phone-frame{background:#101820;border:2px solid #3a4a58;border-radius:14px;padding:10px}
+  #phone-map{display:block;background:#0e1a24;border-radius:6px}
+  #phone-apps{margin-top:8px;text-align:center;font-size:13px;color:#9fd8e8}
+  #saves{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(5,8,12,.72);z-index:10;pointer-events:auto}
+  #saves .panel{min-width:300px}
+  #saves h2{margin:0 0 8px 0;font-size:16px}
+  #saves .mode-btn{font-size:13px;padding:5px 14px;margin-right:6px;cursor:pointer;
+    background:#22303c;color:#b9c4cc;border:1px solid #3a4a58;border-radius:4px}
+  #saves .mode-btn.on{background:#ffb347;color:#101820;border-color:#ffb347;font-weight:bold}
+  #title .controls{margin-top:14px;font-size:13px;color:#b9c4cc;letter-spacing:1px}
+  .save-slot{padding:8px;border:1px solid #3a4a58;border-radius:4px;margin-top:6px;
+    font-size:13px;cursor:pointer}
+  #title{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;background:rgba(5,8,12,.55);z-index:20;pointer-events:auto}
+  #title h1{font-size:64px;letter-spacing:10px;margin:0;color:#ffb347}
+  #title p{font-size:16px;color:#9fd8e8;letter-spacing:3px}
+  #title button{margin-top:18px;font-size:18px;padding:10px 28px;cursor:pointer;
+    background:#ffb347;border:none;border-radius:6px;color:#101820;font-weight:bold}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="hud">
+  <div id="hud-topleft" class="panel">
+    <div id="hud-money">$0</div>
+    <div id="hud-clock">DAY 1 &nbsp; 08:00</div>
+    <div id="hud-wanted"><span class="on">&#9733;</span><span class="off">&#9733;</span><span class="off">&#9733;</span></div>
+  </div>
+  <div id="hud-district" class="panel">
+    <div id="hud-district-name">HARBORLIGHT</div>
+    <div id="hud-standing-wrap"><div id="hud-standing"></div></div>
+    <div id="hud-standing-label">NEUTRAL &middot; 50</div>
+  </div>
+  <div id="hud-right" class="panel">
+    <div id="hud-health-label">HEALTH</div>
+    <div id="hud-health-wrap"><div id="hud-health"></div></div>
+    <div id="hud-armour-label">ARMOUR</div>
+    <div id="hud-armour-wrap"><div id="hud-armour"></div></div>
+    <div id="hud-weapons">
+      <span class="slot on" data-slot="1">1 FISTS</span><span class="slot" data-slot="2">2 PISTOL</span><span class="slot" data-slot="3">3 SMG</span>
+    </div>
+  </div>
+  <div id="mission" class="panel">
+    <div id="mission-stage">MISSION 1 / 3</div>
+    <div id="mission-name">FIRST LIGHT</div>
+    <div id="mission-objective">Get to the docks.</div>
+    <div id="mission-timer">12:00</div>
+    <div id="mission-next">NEXT: reach the marker</div>
+  </div>
+  <div id="dispatch-log" class="panel"></div>
+  <canvas id="minimap" width="250" height="250"></canvas>
+</div>
+<div id="phone">
+  <div id="phone-frame">
+    <canvas id="phone-map" width="1000" height="860"></canvas>
+    <div id="phone-apps">&#128506; MAP &nbsp;&middot;&nbsp; press TAB to close</div>
+  </div>
+</div>
+<div id="saves">
+  <div class="panel">
+    <h2 id="saves-title">SAVE GAME</h2>
+    <div>
+      <button class="mode-btn on" id="saves-mode-save">SAVE</button><button class="mode-btn" id="saves-mode-load">LOAD</button>
+    </div>
+    <div class="save-slot" data-save="1">SLOT 1 &mdash; empty</div>
+    <div class="save-slot" data-save="2">SLOT 2 &mdash; empty</div>
+    <div class="save-slot" data-save="3">SLOT 3 &mdash; empty</div>
+  </div>
+</div>
+<div id="title">
+  <h1>SALTPORT</h1>
+  <p>A HARBOUR CITY &middot; THREE TIDES &middot; ONE WAY OUT</p>
+  <button id="title-start">START</button>
+  <div class="controls">WASD MOVE &middot; 1/2/3 WEAPONS &middot; TAB PHONE &middot; Q SAVES</div>
+</div>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
