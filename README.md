@@ -27,8 +27,14 @@ at a time.
   and a NEXT step to follow.
 - A 3-star wanted system with named SPD dispatch units: SPD-7 'Harbor'
   (pursuit), SPD-12 'Gull' (foot patrol), and SPD-AIR 'Kestrel' (air
-  support), plus a live dispatch log.
-- Combat with 3 weapon slots (Fists, Pistol, SMG), health, and armour.
+  support), plus a live dispatch log and a wanted banner.
+- Combat that works: mouse aim, left-click fires with a visible tracer
+  and muzzle flash, an ammo counter that drops on every shot, R to
+  reload, 3 weapon slots (Fists, Pistol, SMG), health, and armour.
+  Firing draws the police instantly — and a Rusthook falls when hit.
+- A police chase: the pursuit car closes in on Kade, the helicopter
+  shadows him from above with its searchlight beam, and the foot
+  patrol joins at 3 stars.
 - A full HUD with a minimap, district standing bar, money, and an
   in-game clock — plus an in-game phone with a labelled city map,
   3 save slots, and a day/night cycle.
@@ -42,6 +48,7 @@ python3 -m http.server 8080 --directory game
 ```
 
 - WASD / arrow keys — move (the hero turns to face where he walks)
+- Mouse — aim; left-click — fire; right-click — aim; R — reload
 - 1 / 2 / 3 — switch weapon (Fists / Pistol / SMG)
 - TAB / P — open the phone (city map)
 - Q — save menu (3 slots)

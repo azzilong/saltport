@@ -1,4 +1,4 @@
-// SALTPORT — in-game phone + save slots (step 8).
+// SALTPORT — in-game phone + save slots (step 8, rebuilt in-session).
 // Phone: one app (MAP) drawn from the same city object as the minimap.
 // Saves: 3 localStorage slots, SAVE/LOAD mode, slot labels show what is
 // stored. Keys: TAB or P = phone, Q = save menu, ESC = close overlays.

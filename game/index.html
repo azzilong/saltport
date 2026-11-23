@@ -22,12 +22,18 @@
   #hud-standing-wrap{height:8px;background:#22303c;border-radius:4px;margin-top:5px;overflow:hidden}
   #hud-standing{height:100%;width:50%;background:#7fc96f}
   #hud-standing-label{font-size:11px;color:#b9c4cc;margin-top:3px}
+  #hud-banner{position:absolute;top:86px;left:50%;transform:translateX(-50%);
+    font-size:15px;font-weight:bold;letter-spacing:2px;color:#ff5a4a;
+    background:rgba(10,16,22,.78);border:1px solid #ff5a4a;border-radius:6px;
+    padding:6px 12px;display:none}
   #hud-right{position:absolute;top:12px;right:12px;text-align:right}
   #hud-health-wrap,#hud-armour-wrap{width:170px;height:10px;background:#22303c;
     border-radius:5px;overflow:hidden;margin-top:4px}
   #hud-health{height:100%;width:100%;background:#e05252}
   #hud-armour{height:100%;width:0%;background:#5aa9e0}
   #hud-health-label,#hud-armour-label{font-size:11px;color:#b9c4cc}
+  #hud-ammo{margin-top:8px;font-size:20px;font-weight:bold;color:#ffe14a}
+  #hud-ammo-label{font-size:11px;color:#b9c4cc}
   #hud-weapons{margin-top:8px;font-size:13px}
   #hud-weapons .slot{display:inline-block;border:1px solid #3a4a58;border-radius:4px;
     padding:3px 7px;margin-left:5px;color:#b9c4cc}
@@ -78,11 +84,14 @@
     <div id="hud-standing-wrap"><div id="hud-standing"></div></div>
     <div id="hud-standing-label">NEUTRAL &middot; 50</div>
   </div>
+  <div id="hud-banner">WANTED &#9733; PATROL ALERTED</div>
   <div id="hud-right" class="panel">
     <div id="hud-health-label">HEALTH</div>
     <div id="hud-health-wrap"><div id="hud-health"></div></div>
     <div id="hud-armour-label">ARMOUR</div>
     <div id="hud-armour-wrap"><div id="hud-armour"></div></div>
+    <div id="hud-ammo-label">AMMO</div>
+    <div id="hud-ammo">-- / --</div>
     <div id="hud-weapons">
       <span class="slot on" data-slot="1">1 FISTS</span><span class="slot" data-slot="2">2 PISTOL</span><span class="slot" data-slot="3">3 SMG</span>
     </div>
@@ -118,7 +127,7 @@
   <h1>SALTPORT</h1>
   <p>A HARBOUR CITY &middot; THREE TIDES &middot; ONE WAY OUT</p>
   <button id="title-start">START</button>
-  <div class="controls">WASD MOVE &middot; 1/2/3 WEAPONS &middot; TAB PHONE &middot; Q SAVES</div>
+  <div class="controls">WASD MOVE &middot; MOUSE AIM + CLICK FIRE &middot; R RELOAD &middot; 1/2/3 WEAPONS &middot; TAB PHONE &middot; Q SAVES</div>
 </div>
 <script type="importmap">
 { "imports": { "three": "./vendor/three.module.min.js" } }

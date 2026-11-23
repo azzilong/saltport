@@ -1,4 +1,4 @@
-// SALTPORT — missions + wanted + police response (step 7).
+// SALTPORT — missions + wanted + police response (step 7, rebuilt in-session).
 // Pure logic over the shared state object; the 3D actors are passed in so
 // this file never touches the renderer. Called once per frame from main.js.
 import { animateWalk } from './characterBuilder.js';
@@ -41,9 +41,11 @@ export function updateMissions(state, dt, log) {
 }
 
 // Police response, driven by the wanted level. The pursuit car closes in
-// and rams when it gets close, the helicopter shadows the hero from
-// wanted 2, and the foot patrol joins the chase at wanted 3. Busted at
-// zero health: Kade is dumped back at the spawn street, half his cash gone.
+// fast (12 u/s, up from 8) so the closing is visible in a chase frame, and
+// rams when it gets close; the helicopter shadows the hero from wanted 2,
+// hovering low (13) with its searchlight beam on; the foot patrol joins
+// the chase at wanted 3. Busted at zero health: Kade is dumped back at
+// the spawn street, half his cash gone.
 export function updatePolice(state, dt, t, actors) {
   const { hero, policeCar, cop, heli } = actors;
   const hp = hero.position;
@@ -51,11 +53,11 @@ export function updatePolice(state, dt, t, actors) {
   if (state.wanted >= 1 && dCar > 6) {
     const vx = (hp.x - policeCar.position.x) / dCar;
     const vz = (hp.z - policeCar.position.z) / dCar;
-    policeCar.position.x += vx * 8 * dt;
-    policeCar.position.z += vz * 8 * dt;
+    policeCar.position.x += vx * 12 * dt;
+    policeCar.position.z += vz * 12 * dt;
     policeCar.rotation.y = Math.atan2(vx, vz) + Math.PI;
     if (policeCar.userData.wheels) {
-      for (const w of policeCar.userData.wheels) w.rotation.x += 8 * dt * 2;
+      for (const w of policeCar.userData.wheels) w.rotation.x += 12 * dt * 2;
     }
   }
   if (state.wanted >= 2 && dCar < 4) {
@@ -66,7 +68,9 @@ export function updatePolice(state, dt, t, actors) {
     }
   }
   if (state.wanted >= 2) {
-    const tx = hp.x + 10, tz = hp.z - 10;
+    // Shadow point is ahead of the hero, so the heli stays in the
+    // over-shoulder camera's view with its beam on the street ahead.
+    const tx = hp.x, tz = hp.z - 20;
     const k = 1 - Math.exp(-dt * 2.0);
     heli.position.x += (tx - heli.position.x) * k;
     heli.position.z += (tz - heli.position.z) * k;
@@ -99,4 +103,66 @@ export function updatePolice(state, dt, t, actors) {
 function log2(state, s) {
   state.dispatch.unshift(s);
   if (state.dispatch.length > 8) state.dispatch.pop();
+}
+
+// --- ITEM DROPS: cash + weapon pickups (pure data; main.js renders them) ---
+// Every fallen Rusthook drops cash ($25–$50); 1 in 3 also drops a weapon
+// (SMG unlock with ammo if Kade does not own it yet, else a PISTOL ammo
+// refill). Two fixed weapon pickups sit in the world: the docks in
+// Harborlight and a street in Old Cannery. Walk-over radius is 1.5.
+export const PICKUP_RADIUS = 1.5;
+const FIXED_WEAPON_SPOTS = [
+  { x: -52, z: -100, label: 'the docks' },
+  { x: 0, z: -52, label: 'Old Cannery' },
+];
+
+export function spawnDrop(state, kind, x, z, opts = {}) {
+  const p = { kind, x, z, phase: Math.random() * 6.28 };
+  if (kind === 'cash') p.amount = opts.amount ?? (25 + Math.floor(Math.random() * 26));
+  if (kind === 'weapon') p.weapon = opts.weapon ?? (state.owned[3] ? 2 : 3);
+  state.pickups.push(p);
+  return p;
+}
+
+// Drops from one fallen Rusthook: always cash, 1-in-3 a weapon too.
+// Drops land along the street (z offsets keep x on the street — an
+// east/west offset would land inside the block's buildings).
+export function spawnEnemyDrops(state, x, z) {
+  spawnDrop(state, 'cash', x, z - 2.0);
+  if (Math.random() < 1 / 3) spawnDrop(state, 'weapon', x, z + 2.0);
+}
+
+// The two fixed world weapon pickups (SMG while it is still locked).
+export function spawnFixedPickups(state) {
+  for (const s of FIXED_WEAPON_SPOTS) spawnDrop(state, 'weapon', s.x, s.z, { weapon: 3 });
+}
+
+// Walk-over collection: cash raises the HUD $ counter with a +$XX log
+// line; a weapon you own refills to full, a new one unlocks + equips.
+export function updatePickups(state, log) {
+  if (!state.pickups.length) return;
+  const hp = state.heroPos;
+  for (let i = state.pickups.length - 1; i >= 0; i--) {
+    const p = state.pickups[i];
+    if (Math.hypot(p.x - hp.x, p.z - hp.z) > PICKUP_RADIUS) continue;
+    state.pickups.splice(i, 1);
+    if (p.kind === 'cash') {
+      state.money += p.amount;
+      log(`+$${p.amount} — cash picked up.`);
+    } else {
+      const w = state.weapons[p.weapon];
+      const full = p.weapon === 2 ? 48 : 90;
+      if (!state.owned[p.weapon]) {
+        state.owned[p.weapon] = true;
+        w.mag = w.magSize;
+        w.reserve = full;
+        state.weapon = p.weapon;
+        log(`PICKED UP — ${w.name} unlocked!`);
+      } else {
+        w.mag = w.magSize;
+        w.reserve = full;
+        log(`PICKED UP — ${w.name} ammo refilled.`);
+      }
+    }
+  }
 }

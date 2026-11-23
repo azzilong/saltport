@@ -125,6 +125,22 @@ export function animateWalk(character, t, moving) {
   }
 }
 
+// Two-handed aim pose: both arms point forward toward the aim direction.
+// Used while the hero fires a gun (slots 2/3).
+export function animateAim(character, aiming) {
+  const j = character.userData.joints;
+  if (!j) return;
+  if (aiming) {
+    j.armR.rotation.x = -Math.PI / 2 + 0.15;
+    j.armL.rotation.x = -Math.PI / 2 + 0.35;
+    j.armL.rotation.z = 0.35;
+  } else {
+    j.armR.rotation.x = 0;
+    j.armL.rotation.x = 0;
+    j.armL.rotation.z = 0;
+  }
+}
+
 // Varian siap pakai — panggil dari main.js.
 export function buildHero() {
   return buildCharacter({ topColor: COLORS.heroCoat });

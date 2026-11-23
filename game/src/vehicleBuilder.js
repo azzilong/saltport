@@ -131,6 +131,17 @@ export function buildHelicopter(color = 0x334455) {
   rotor.position.set(0, 2.05, 0);
   g.add(rotor);
   g.userData.rotor = rotor;
+  // Searchlight beam: a long pale cone under the heli, the thing that
+  // reads as air support in a chase frame. main.js aims it at the hero.
+  const beamG = new THREE.ConeGeometry(2.2, 14, 8, 1, true);
+  const beamM = new THREE.MeshLambertMaterial({
+    color: 0xfff6c8, transparent: true, opacity: 0.28, side: THREE.DoubleSide,
+  });
+  const beam = new THREE.Mesh(beamG, beamM);
+  beam.position.set(0, -5.5, 0);
+  beam.rotation.x = Math.PI; // cone opens downward
+  g.add(beam);
+  g.userData.beam = beam;
   return g;
 }
 

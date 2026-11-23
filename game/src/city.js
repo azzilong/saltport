@@ -8,15 +8,17 @@ export const CITY = {
   block: 18,      // block side in world units
   street: 8,      // street width between blocks
   get pitch() { return this.block + this.street; },
-  // 8 facade colours. Every building takes one of these, nothing else.
-  palette: ['#c96f4a', '#d9a05b', '#7d8c6f', '#5b7d8c', '#8c5b6e', '#b5b0a1', '#6f7d5b', '#a1887f'],
+  // 8 facade colours + 2 bright accents (pink, bright teal) so a small
+  // share of buildings pops against the earth tones — the plain-8 look
+  // read as warehouses. Accents stay rare (~20% of buildings).
+  palette: ['#c96f4a', '#d9a05b', '#7d8c6f', '#5b7d8c', '#8c5b6e', '#b5b0a1', '#6f7d5b', '#a1887f', '#d65a8f', '#2fb8a6'],
   districts: [
-    { name: 'Harborlight',  x0: 0, z0: 0, x1: 3, z1: 4, standing: 62, tint: '#5b7d8c' },
-    { name: 'Old Cannery',  x0: 4, z0: 0, x1: 6, z1: 4, standing: 41, tint: '#8c5b6e' },
-    { name: 'Saltmarket',   x0: 7, z0: 0, x1: 9, z1: 4, standing: 78, tint: '#d9a05b' },
-    { name: 'Gulltown',     x0: 0, z0: 5, x1: 3, z1: 8, standing: 55, tint: '#7d8c6f' },
-    { name: 'The Terraces', x0: 4, z0: 5, x1: 6, z1: 8, standing: 33, tint: '#6f7d5b' },
-    { name: 'Breakwater',   x0: 7, z0: 5, x1: 9, z1: 8, standing: 70, tint: '#c96f4a' },
+    { name: 'Harborlight',  x0: 0, z0: 0, x1: 3, z1: 4, standing: 62, tint: '#5b7d8c', neon: '#2fd8c4' },
+    { name: 'Old Cannery',  x0: 4, z0: 0, x1: 6, z1: 4, standing: 41, tint: '#8c5b6e', neon: '#ff5da2' },
+    { name: 'Saltmarket',   x0: 7, z0: 0, x1: 9, z1: 4, standing: 78, tint: '#d9a05b', neon: '#ffd23c' },
+    { name: 'Gulltown',     x0: 0, z0: 5, x1: 3, z1: 8, standing: 55, tint: '#7d8c6f', neon: '#7ee081' },
+    { name: 'The Terraces', x0: 4, z0: 5, x1: 6, z1: 8, standing: 33, tint: '#6f7d5b', neon: '#ff9f43' },
+    { name: 'Breakwater',   x0: 7, z0: 5, x1: 9, z1: 8, standing: 70, tint: '#c96f4a', neon: '#5aa9e0' },
   ],
   // South edge: sand strip then open sea, both past the last block row.
   beachDepth: 20,
@@ -24,6 +26,11 @@ export const CITY = {
 };
 
 export const FLOOR_H = 3; // one floor = 3 world units
+
+// Sea plane height, verified in the first build and kept in the rebuild:
+// the sea sits at y = 0.0, above the base plane (y = -0.12), so the sea
+// is visible in the city overview instead of being hidden under the ground.
+export const SEA_Y = 0.0;
 
 // Deterministic 0..1 hash of two integers (no Math.random: same city every run).
 export function hash2(a, b) {
@@ -73,6 +80,10 @@ export function cityExtents() {
 
 // Buildings of one block: 4 boxes hugging the block's north and south edges
 // (facades on the street), 2-5 floors, palette colour by hash. Deterministic.
+// Skyline towers: four blocks carry one tall slab (7-8 floors) each so
+// the north edge reads as a skyline instead of a flat warehouse row.
+const TOWERS = new Set(['8,0', '1,1', '9,1', '5,0']);
+
 export function buildingSpots(col, row) {
   const c = blockCenter(col, row);
   const b = CITY.block;
@@ -86,7 +97,13 @@ export function buildingSpots(col, row) {
   for (let i = 0; i < 4; i++) {
     const e = edges[i];
     const h = hash2(col * 4 + i, row * 7 + 1);
-    const floors = 2 + Math.floor(h * 4); // 2..5
+    // Height skew: mostly 2-3 floors, sometimes 4-5, rarely 6 — so the
+    // roofline steps visibly instead of reading as one flat warehouse
+    // deck. The first building of a tower block is 7-8 floors.
+    const isTower = i === 0 && TOWERS.has(col + ',' + row);
+    const floors = isTower
+      ? 7 + Math.floor(hash2(col * 9 + i, row * 3) * 2)
+      : 2 + Math.floor(h * h * 5);
     const ci = Math.floor(hash2(col + 11, row * 3 + i * 5) * CITY.palette.length);
     spots.push({
       x: c.x + e.dx, z: c.z + e.dz, w: e.w, d: e.d,

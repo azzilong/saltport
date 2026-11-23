@@ -1,4 +1,4 @@
-// SALTPORT — HUD wiring + map drawing (step 6).
+// SALTPORT — HUD wiring + map drawing (step 6, rebuilt in-session).
 // updateHud() writes every fixed-ID HUD element from live game state.
 // drawCityMap() renders the ONE city data object (city.js) to any 2D canvas
 // — the 250x250 minimap and the 1000x860 phone map are the same drawing,
@@ -17,6 +17,16 @@ export function fmtTimer(sec) {
   return `${pad2(Math.floor(s / 60))}:${pad2(s % 60)}`;
 }
 
+// Ammo text for the current weapon slot: FISTS shows -- / --, guns show
+// magazine / reserve, e.g. 11 / 48 — it drops by one on every shot.
+// A locked slot (SMG before a weapon drop unlocks it) also shows -- / --.
+export function fmtAmmo(state) {
+  const w = state.weapons && state.weapons[state.weapon];
+  if (!w || w.magSize === 0) return '-- / --';
+  if (state.weapon > 1 && state.owned && !state.owned[state.weapon]) return '-- / --';
+  return `${w.mag} / ${w.reserve}`;
+}
+
 // Write all HUD DOM from the live state object. Cheap: called every frame,
 // but only touches textContent/style when the value actually changed.
 export function updateHud(state) {
@@ -29,6 +39,18 @@ export function updateHud(state) {
       `<span class="${i < state.wanted ? 'on' : 'off'}">&#9733;</span>`).join('');
     if (stars._v !== html) { stars._v = html; stars.innerHTML = html; }
   }
+  // Wanted banner: appears the moment the police are alerted (wanted >= 2),
+  // and names the air unit once it is deployed (wanted 3).
+  const banner = $('hud-banner');
+  if (banner) {
+    const text = state.wanted >= 3
+      ? 'WANTED \u2605\u2605\u2605 AIR UNIT DEPLOYED'
+      : state.wanted >= 2
+        ? 'WANTED \u2605 PATROL ALERTED'
+        : '';
+    banner.style.display = text ? 'block' : 'none';
+    set(banner, text);
+  }
   const d = state.district;
   set($('hud-district-name'), d ? d.name.toUpperCase() : 'SALTport'.toUpperCase());
   const bar = $('hud-standing');
@@ -39,8 +61,14 @@ export function updateHud(state) {
   if (hp) hp.style.width = Math.max(0, state.health) + '%';
   const ar = $('hud-armour');
   if (ar) ar.style.width = Math.max(0, state.armour) + '%';
+  set($('hud-ammo'), fmtAmmo(state));
   document.querySelectorAll('#hud-weapons .slot').forEach((s) => {
-    s.classList.toggle('on', Number(s.dataset.slot) === state.weapon);
+    const slot = Number(s.dataset.slot);
+    s.classList.toggle('on', slot === state.weapon);
+    // Locked weapon slots (SMG until a drop unlocks it) render dimmed.
+    const locked = slot > 1 && state.owned && !state.owned[slot];
+    s.classList.toggle('locked', locked);
+    s.style.opacity = locked ? '0.35' : '';
   });
   const m = state.missions[state.missionIdx];
   if (m) {
