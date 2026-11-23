@@ -1,6 +1,7 @@
-// SALTPORT — missions + wanted + police response (step 7, rebuilt in-session).
-// Pure logic over the shared state object; the 3D actors are passed in so
-// this file never touches the renderer. Called once per frame from main.js.
+// SALTPORT — missions + wanted + police response (re-written in-session
+// for rebuild #3, recording 5). Pure logic over the shared state object;
+// the 3D actors are passed in so this file never touches the renderer.
+// Called once per frame from main.js.
 import { animateWalk } from './characterBuilder.js';
 
 export const SPAWN = { x: -52, z: -52 };

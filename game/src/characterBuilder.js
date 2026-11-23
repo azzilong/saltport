@@ -1,5 +1,11 @@
 import * as THREE from 'three';
 
+// SALTPORT — character builder (user's code, re-written in-session for
+// rebuild #3, recording 5). COLORS keys are skinColor/pantsColor/
+// shoesColor/hairColor: buildCharacter reads c.skinColor etc., so the
+// plain skin/pants/shoes/hair keys would render WHITE. No colour value
+// changed (hero coat 0xb23a2e, enemy 0xe07b22, police 0x2b3a55).
+
 // Palet warna — ubah di sini saja untuk membuat varian baru.
 const COLORS = {
   skinColor: 0xc98a5b,

@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 
+// SALTPORT — vehicle builder (user's code, re-written in-session for
+// rebuild #3, recording 5). Sedan/van/police/scooter/helicopter; the
+// helicopter carries the searchlight beam used in the chase frame.
+
 function box(w, h, d, color, opts = {}) {
   const g = new THREE.BoxGeometry(w, h, d);
   const m = new THREE.MeshLambertMaterial({

@@ -1,6 +1,8 @@
 // SALTPORT — build program (Node 22, standard library only).
-// Rebuilt 2026-11-23 under recording 01a2084f (round 8 witness-lag
-// rebuild): same build, now bundling the shooting + chase systems.
+// Re-written in-session for rebuild #3 (recording 5, 2026-11-23):
+// recording 4 died in a VM restart before sealing, so this file is
+// re-authored here under the fresh settled recording. Same build as
+// before, bundling the shooting + chase systems and item drops.
 // Copies game/ and screenshots/ beside this file to /output and writes
 // /output/dossier.json, the summary the judge reads, via make.fun's library.
 // The 163,840-byte text cap covers the game's own source text only:

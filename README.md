@@ -35,6 +35,13 @@ at a time.
 - A police chase: the pursuit car closes in on Kade, the helicopter
   shadows him from above with its searchlight beam, and the foot
   patrol joins at 3 stars.
+- Item drops: fallen Rusthooks drop cash pickups ($25–$50) and
+  sometimes a weapon pickup — walk over one to collect it. A weapon
+  you don't own unlocks (the SMG starts locked); one you own refills
+  its ammo to full.
+- A dense living city: lit windows, rooftop props, shopfront awnings
+  and neon signs, parked cars, slow traffic, and pedestrians on the
+  sidewalks.
 - A full HUD with a minimap, district standing bar, money, and an
   in-game clock — plus an in-game phone with a labelled city map,
   3 save slots, and a day/night cycle.

@@ -1,6 +1,7 @@
 // SALTPORT — the one city data object. The 3D renderer, the minimap canvas
 // and the phone map all read this object, so the three views can never drift.
 // Grid: 10 x 9 blocks. One side (south, +z past the last row) is beach + sea.
+// Re-written in-session for rebuild #3 (recording 5, 2026-11-23).
 export const CITY = {
   name: 'Saltport',
   cols: 10,

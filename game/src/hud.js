@@ -1,8 +1,9 @@
-// SALTPORT — HUD wiring + map drawing (step 6, rebuilt in-session).
-// updateHud() writes every fixed-ID HUD element from live game state.
-// drawCityMap() renders the ONE city data object (city.js) to any 2D canvas
-// — the 250x250 minimap and the 1000x860 phone map are the same drawing,
-// so the three views (3D, minimap, phone) can never drift.
+// SALTPORT — HUD wiring + map drawing (re-written in-session for
+// rebuild #3, recording 5). updateHud() writes every fixed-ID HUD
+// element from live game state. drawCityMap() renders the ONE city data
+// object (city.js) to any 2D canvas — the 250x250 minimap and the
+// 1000x860 phone map are the same drawing, so the three views (3D,
+// minimap, phone) can never drift.
 import { CITY, cityExtents, districtAt, standingLabel } from './city.js';
 
 const $ = (id) => document.getElementById(id);

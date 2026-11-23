@@ -1,5 +1,7 @@
 // SALTPORT — renderer + city + characters + vehicles + shooting + chase.
-// Rebuilt in-session for the Saltport rebuild (gta6-01).
+// Re-written in-session for rebuild #3 (recording 5, 2026-11-23):
+// recording 4 died in a VM restart before sealing, so every file is
+// re-authored here under the fresh settled recording.
 import * as THREE from 'three';
 import { CITY, blockCenter, blockDistrict, blockSign, buildingSpots, cityExtents, districtAt, hash2, palmSpots } from './city.js';
 import { buildHero, buildEnemy, buildPolice, buildCharacter, animateWalk, animateAim } from './characterBuilder.js';
